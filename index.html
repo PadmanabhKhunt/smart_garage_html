@@ -9,6 +9,9 @@
   <!-- Include custom CSS styles -->
   <style>
     /* Add your custom CSS styles here */
+    body {
+      background-color: #000000;
+    }
   </style>
 </head>
 
@@ -43,17 +46,17 @@
       // Fetch and display all users on page load
       window.addEventListener('DOMContentLoaded', getUsers);
 
-// Function to fetch all users from the server
-function getUsers() {
-  axios.get('/admin/users')
-    .then(response => {
-      const users = response.data;
-      const userTableBody = document.getElementById('userTableBody');
-      userTableBody.innerHTML = '';
+      // Function to fetch all users from the server
+      function getUsers() {
+        axios.get('/admin/users')
+          .then(response => {
+            const users = response.data;
+            const userTableBody = document.getElementById('userTableBody');
+            userTableBody.innerHTML = '';
 
-      users.forEach(user => {
-        const row = document.createElement('tr');
-        row.innerHTML = `
+            users.forEach(user => {
+              const row = document.createElement('tr');
+              row.innerHTML = `
           <td>${user._id}</td>
           <td>${user.username}</td>
           <td>
@@ -61,64 +64,64 @@ function getUsers() {
             <button onclick="toggleUserAllow('${user._id}', ${user.isAllowed})">${user.isAllowed ? 'Not Allow' : 'Allow'}</button>
           </td>
         `;
-        userTableBody.appendChild(row);
+              userTableBody.appendChild(row);
+            });
+          })
+          .catch(error => {
+            console.error(error);
+          });
+      }
+
+      function toggleUserAllow(userId, isAllowed) {
+        const newAllowStatus = !isAllowed; // Toggle the allow status
+
+        axios.patch(`https://smart-garage.onrender.com/admin/users/${userId}`, { isAllowed: newAllowStatus })
+          .then(response => {
+            console.log(response.data);
+            // Refresh the user table
+            getUsers();
+          })
+          .catch(error => {
+            console.error(error);
+          });
+      }
+
+
+      // Function to delete a user
+      function deleteUser(userId) {
+        axios.delete(`https://smart-garage.onrender.com/admin/users/${userId}`)
+          .then(response => {
+            console.log(response.data);
+            // Refresh the user table
+            getUsers();
+          })
+          .catch(error => {
+            console.error(error);
+          });
+      }
+
+      // Function to handle new user creation form submission
+      document.getElementById('createUserForm').addEventListener('submit', function (event) {
+        event.preventDefault();
+        const newUsername = document.getElementById('newUsername').value;
+        const newPassword = document.getElementById('newPassword').value;
+
+        axios.post('https://smart-garage.onrender.com/signup', { username: newUsername, password: newPassword, isAdmin: true })
+          .then(response => {
+            console.log(response.data);
+            // Refresh the user table
+            getUsers();
+            // Reset the form fields
+            document.getElementById('newUsername').value = '';
+            document.getElementById('newPassword').value = '';
+          })
+          .catch(error => {
+            console.error(error);
+          });
       });
-    })
-    .catch(error => {
-      console.error(error);
-    });
-}
 
-function toggleUserAllow(userId, isAllowed) {
-  const newAllowStatus = !isAllowed; // Toggle the allow status
-
-  axios.patch(`https://smart-garage.onrender.com/admin/users/${userId}`, { isAllowed: newAllowStatus })
-    .then(response => {
-      console.log(response.data);
-      // Refresh the user table
-      getUsers();
-    })
-    .catch(error => {
-      console.error(error);
-    });
-}
-
-
-// Function to delete a user
-function deleteUser(userId) {
-  axios.delete(`https://smart-garage.onrender.com/admin/users/${userId}`)
-    .then(response => {
-      console.log(response.data);
-      // Refresh the user table
-      getUsers();
-    })
-    .catch(error => {
-      console.error(error);
-    });
-}
-
-// Function to handle new user creation form submission
-document.getElementById('createUserForm').addEventListener('submit', function (event) {
-  event.preventDefault();
-  const newUsername = document.getElementById('newUsername').value;
-  const newPassword = document.getElementById('newPassword').value;
-
-  axios.post('https://smart-garage.onrender.com/signup', { username: newUsername, password: newPassword, isAdmin: true })
-    .then(response => {
-      console.log(response.data);
-      // Refresh the user table
-      getUsers();
-      // Reset the form fields
-      document.getElementById('newUsername').value = '';
-      document.getElementById('newPassword').value = '';
-    })
-    .catch(error => {
-      console.error(error);
-    });
-});
-
-// Refresh the user table every 5 seconds (adjust the interval as needed)
-setInterval(getUsers, 5000);
+      // Refresh the user table every 5 seconds (adjust the interval as needed)
+      setInterval(getUsers, 5000);
 
     </script>
   </div>
