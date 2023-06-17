@@ -48,7 +48,7 @@
 
       // Function to fetch all users from the server
       function getUsers() {
-        axios.get('/admin/users')
+        axios.get('https://smart-garage.onrender.com/admin/users')
           .then(response => {
             const users = response.data;
             const userTableBody = document.getElementById('userTableBody');
