@@ -9,9 +9,6 @@
   <!-- Include custom CSS styles -->
   <style>
     /* Add your custom CSS styles here */
-    body {
-      background-color: #000000;
-    }
   </style>
 </head>
 
@@ -51,6 +48,7 @@
         axios.get('https://smart-garage.onrender.com/admin/users')
           .then(response => {
             const users = response.data;
+            console.log(users);
             const userTableBody = document.getElementById('userTableBody');
             userTableBody.innerHTML = '';
 
